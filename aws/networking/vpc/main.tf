@@ -70,11 +70,12 @@ resource "aws_route_table" "private" {
     cidr_block    = "0.0.0.0/0"
     gateway_id    = "${aws_nat_gateway.nat_gw.*.id}"
   }
+  count         = "${length(compact(split(",", local.private_subnets)))}" 
   tags       = "${merge(var.tags, map("Name", format("%s-private-route",var.name)))}"
 }
 
 resource "aws_route_table_association" "private" {
   subnet_id       = "${element(aws_subnet.private.*.id, count.index)}"
-  route_table_id  = "${aws_route_table.private.id}"
+  route_table_id  = "${element(aws_route_table.private.*.id, count.index)}"
   count           = "${length(split(",", var.private_subnets))}"
 }
