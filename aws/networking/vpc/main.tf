@@ -68,9 +68,9 @@ resource "aws_route_table" "private" {
   vpc_id    = "${aws_vpc.web_vpc.id}"
   route {
     cidr_block    = "0.0.0.0/0"
-    gateway_id    = "${aws_nat_gateway.nat_gw.*.id}"
+    gateway_id    = "${element(aws_nat_gateway.nat_gw.*.id, count.index)}"
   }
-  count         = "${length(compact(split(",", local.private_subnets)))}" 
+  count         = "${length(compact(split(",", var.private_subnets)))}" 
   tags       = "${merge(var.tags, map("Name", format("%s-private-route",var.name)))}"
 }
 
